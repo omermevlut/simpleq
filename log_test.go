@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -22,11 +22,8 @@ func TestDefaultLogger_Error(t *testing.T) {
 		out, _ := ioutil.ReadAll(r)
 		os.Stdout = rescueStdout
 
-		expect := []byte(`[1;31merror
-[0m`)
-
-		if !reflect.DeepEqual(out, expect) {
-			t.Errorf("Expected Error() to output %v, got %v", out, expect)
+		if !strings.Contains(string(out), "[ERROR] error") {
+			t.Errorf("Expected Error() to contain output [ERROR] error, got %v", out)
 		}
 	})
 }
@@ -45,11 +42,8 @@ func TestDefaultLogger_Info(t *testing.T) {
 		out, _ := ioutil.ReadAll(r)
 		os.Stdout = rescueStdout
 
-		expect := []byte(`[1;34minfo
-[0m`)
-
-		if !reflect.DeepEqual(out, expect) {
-			t.Errorf("Expected Info() to output %v, got %v", out, expect)
+		if !strings.Contains(string(out), "[INFO] info") {
+			t.Errorf("Expected Error() to contain output [INFO] info, got %v", out)
 		}
 	})
 }
@@ -68,11 +62,8 @@ func TestDefaultLogger_Warn(t *testing.T) {
 		out, _ := ioutil.ReadAll(r)
 		os.Stdout = rescueStdout
 
-		expect := []byte(`[1;33mwarn
-[0m`)
-
-		if !reflect.DeepEqual(out, expect) {
-			t.Errorf("Expected Warn() to output %v, got %v", out, expect)
+		if !strings.Contains(string(out), "[WARNING] warn") {
+			t.Errorf("Expected Error() to contain output [WARNING] warn, got %v", out)
 		}
 	})
 }

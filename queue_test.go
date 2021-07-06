@@ -20,10 +20,11 @@ func (ti *TaskImpl) Fail(err error) {
 func TestNewQueue(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	d := NewMockDriver(ctrl)
+	lg := NewMockLogger(ctrl)
 
 	qName := "test-queue"
 
-	Init(d, &DefaultLogger{})
+	Init(d, lg)
 
 	t.Run("it_should_return_error_when_it_fails_to_initialize_a_queue", func(t *testing.T) {
 		expect := fmt.Errorf("failed to register")
@@ -49,6 +50,8 @@ func TestNewQueue(t *testing.T) {
 				return nil
 			}).
 			Times(1)
+
+		lg.EXPECT().Info(gomock.Any()).Times(1)
 
 		expect := Queue{
 			Workers:  2,
@@ -192,9 +195,10 @@ func TestQueue_read(t *testing.T) {
 			Times(1)
 
 		task.EXPECT().Fail(fmt.Errorf("failed to run")).Times(1)
-		dl.EXPECT().Info(gomock.Any()).Times(2)
-
 		d.EXPECT().SetFailed("simple-queue:data:test-queue", gomock.Any()).Times(1)
+		dl.EXPECT().Info(gomock.Any()).Times(1)
+		dl.EXPECT().Warn(gomock.Any()).Times(1)
+
 		queue.read(task)
 	})
 
