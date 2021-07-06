@@ -12,6 +12,26 @@ func NewRedisQueueDriver(r RedisInterface) *RedisQueueDriver {
 	return &RedisQueueDriver{r}
 }
 
+// RedisOptions is a redis.Options wrapper
+type RedisOptions struct {
+	PoolSize     int
+	PoolTimeout  time.Duration
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+	Addr         string
+}
+
+// NewRedisClient returns a pointer to a new client with built-in version
+func NewRedisClient(opts *RedisOptions) *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:         opts.Addr,
+		PoolTimeout:  opts.PoolTimeout,
+		ReadTimeout:  opts.ReadTimeout,
+		WriteTimeout: opts.WriteTimeout,
+		PoolSize:     opts.PoolSize,
+	})
+}
+
 // RedisInterface is an interface for needed methods of the redis client [go get github.com/go-redis/redis]
 type RedisInterface interface {
 	SAdd(ctx context.Context, key string, members ...interface{}) *redis.IntCmd
