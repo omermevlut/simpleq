@@ -29,6 +29,8 @@ func TestDefaultLogger_Error(t *testing.T) {
 }
 
 func TestDefaultLogger_Info(t *testing.T) {
+	LogLevel = LogLevelInfo
+
 	t.Run("it_should_output_formatted_info", func(t *testing.T) {
 		lg := DefaultLogger{}
 
@@ -49,6 +51,8 @@ func TestDefaultLogger_Info(t *testing.T) {
 }
 
 func TestDefaultLogger_Warn(t *testing.T) {
+	LogLevel = LogLevelWarn
+
 	t.Run("it_should_output_formatted_warning", func(t *testing.T) {
 		lg := DefaultLogger{}
 

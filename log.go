@@ -11,9 +11,10 @@ const (
 	LogLevelInfo
 )
 
-const (
-	LogLevel = LogLevelError
+// LogLevel package global
+var LogLevel = LogLevelError
 
+const (
 	infoColor    = "\033[1;34m%s\033[0m"
 	warningColor = "\033[1;33m%s\033[0m"
 	errorColor   = "\033[1;31m%s\033[0m"
