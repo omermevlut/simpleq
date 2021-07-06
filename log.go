@@ -51,7 +51,7 @@ func (dl *DefaultLogger) Warn(w interface{}) {
 }
 
 func (dl *DefaultLogger) write(level int, color string, i interface{}) {
-	if LogLevel <= level {
+	if LogLevel >= level {
 		var layout = "02-Jan-2006 15:04:05"
 
 		fmt.Printf(color, fmt.Sprintf("%v [%v] %v\n", time.Now().Format(layout), logLevelText[level], i))
