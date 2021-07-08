@@ -28,7 +28,9 @@ import (
 var redisClient = redis.NewClient(&redis.Options{})
 
 // Task implementation
-type Task struct{}
+type Task struct{
+    Queue simpleq.Queueable // it's a good idea to include the queue inside the task (Requeue(), Push() again)
+}
 
 // Run is called every time task is executed
 func (t *Task) Run(c simpleq.Context) error {
