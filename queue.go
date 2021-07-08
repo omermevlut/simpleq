@@ -50,6 +50,9 @@ func NewQueue(name string, workers int8) (*Queue, error) {
 // use DelayedQueue for delayed (scheduled) messages
 // use NewQueue() factory function instead of manually initializing
 type Queue struct {
+	isStopped   bool
+	activeTasks int
+
 	Workers  int8
 	Name     string
 	StopC    chan struct{}
@@ -73,16 +76,20 @@ func (q *Queue) Push(c Context) error {
 func (q *Queue) OnExec(task Task) {
 	ticker := time.NewTicker(100 * time.Millisecond)
 
-	go func() {
-		for {
-			select {
-			case <-q.stopExec:
-				close(q.StopC)
-			case <-ticker.C:
-				q.read(task)
+	for i := int8(0); i < q.Workers; i++ {
+		go func() {
+			for {
+				if q.isStopped {
+					return
+				}
+
+				select {
+				case <-ticker.C:
+					q.read(task)
+				}
 			}
-		}
-	}()
+		}()
+	}
 }
 
 // Requeue pushes the task back in into queue until max attempts reached
@@ -98,7 +105,16 @@ func (q *Queue) Requeue(c Context) error {
 
 // Stop queue from being executed
 func (q *Queue) Stop() {
-	q.stopExec <- struct{}{}
+	q.isStopped = true
+
+	if q.activeTasks > 0 {
+		<-time.NewTicker(time.Millisecond).C
+		q.Stop()
+
+		return
+	}
+
+	close(q.StopC)
 }
 
 func (q *Queue) read(task Task) {
@@ -115,6 +131,7 @@ func (q *Queue) read(task Task) {
 		}
 
 		logger.Info(fmt.Sprintf("[Processing] queue %v, task ID: %v", q.Name, m.GetID()))
+		q.activeTasks++
 		if err := task.Run(&m); err != nil {
 			task.Fail(err)
 			_ = driver.SetFailed(qName, m.GetID())
@@ -123,6 +140,7 @@ func (q *Queue) read(task Task) {
 			_ = driver.SetProcessed(qName)
 			logger.Info(fmt.Sprintf("[Processed] queue %v, task ID: %v", q.Name, m.GetID()))
 		}
+		q.activeTasks--
 	}
 }
 
