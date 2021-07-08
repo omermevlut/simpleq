@@ -54,7 +54,7 @@ func main() {
 	}
 
 	// push to the defined queue
-	if err := q.Push(simpleq.NewMessage([]byte(uuid.New().String()))); err != nil {
+	if err := q.Push(simpleq.NewMessage([]byte("test message"))); err != nil {
 		panic(err)
 	}
 
