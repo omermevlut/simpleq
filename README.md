@@ -8,7 +8,8 @@ Simple queue implementation
 
 - [x] Queue
 - [x] Requeue
-- [ ] Logger
+- [x] Basic Logging 
+- [ ] Detailed Logging
 - [ ] Schedule
 - [ ] Reschedule
 - [ ] Delete
