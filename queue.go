@@ -33,7 +33,7 @@ type Queueable interface {
 // NewQueue returns a pointer to a new Queue instance
 func NewQueue(name string, workers int8) (*Queue, error) {
 	if err := driver.Register(name); err != nil {
-		return nil, err
+		logger.Warn(fmt.Sprintf("Failed to register, %v", err))
 	}
 
 	logger.Info(fmt.Sprintf("Initialized queue %s", name))
