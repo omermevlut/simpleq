@@ -27,7 +27,7 @@ func TestNewQueue(t *testing.T) {
 	Init(d, lg)
 
 	t.Run("it_should_return_error_when_it_fails_to_initialize_a_queue", func(t *testing.T) {
-		expect := fmt.Errorf("failed to register")
+		err := fmt.Errorf("failed to register")
 
 		d.
 			EXPECT().
@@ -37,9 +37,7 @@ func TestNewQueue(t *testing.T) {
 			}).
 			Times(1)
 
-		if _, err := NewQueue(qName, 1); err == nil || err.Error() != expect.Error() {
-			t.Errorf("Expected NewQueue() to return errror %v, got %v", expect, err)
-		}
+		lg.EXPECT().Warn(fmt.Sprintf("Failed to register, %v", err)).Times(1)
 	})
 
 	t.Run("it_should_return_new_queue_instance", func(t *testing.T) {
